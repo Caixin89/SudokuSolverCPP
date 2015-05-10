@@ -70,9 +70,9 @@ void SudokuSolver::PrintGrid(int aGrid[][_side])
 	}
 
 	auto newEndTime = chrono::high_resolution_clock::now();
-	_solutionFile << "Time taken for this solution: " << chrono::duration_cast<chrono::microseconds>(newEndTime - _endTime).count() << " microsec" << endl;
+	_solutionFile << "Time taken for this solution: " << TimeStr(chrono::duration_cast<chrono::microseconds>(newEndTime - _endTime).count()) << endl;
 	_endTime = newEndTime;
-	_solutionFile << "Time elapsed: " << chrono::duration_cast<chrono::microseconds>(_endTime - _startTime).count() << " microsec" << endl;
+	_solutionFile << "Time elapsed: " << TimeStr(chrono::duration_cast<chrono::microseconds>(_endTime - _startTime).count()) << endl << endl;
 }
 
 void SudokuSolver::RecurrSolve(int aGrid[][_side], int y, int x)
@@ -91,7 +91,7 @@ void SudokuSolver::RecurrSolve(int aGrid[][_side], int y, int x)
 			Check_From_Col(prob, copyGrid, y, x);
 			Check_From_3x3(prob, copyGrid, y, x);
 
-			if (_grid[y][x] == 0)
+			if (copyGrid[y][x] == 0)
 			{
 				if (prob != 0 && (prob & (prob - 1)) == 0)
 					copyGrid[y][x] = CustomLog2(prob);
@@ -102,7 +102,7 @@ void SudokuSolver::RecurrSolve(int aGrid[][_side], int y, int x)
 						lsb = prob & -prob;
 						copyGrid[y][x] = CustomLog2(lsb);
 						RecurrSolve(copyGrid, y, x + 1);
-						prob &= ~lsb;						
+						prob &= ~lsb;
 					}
 
 					return;
@@ -153,7 +153,7 @@ int SudokuSolver::CustomLog2(int val)
 		ans = 9;
 		break;
 	default:
-		ans = (int) log2(val);
+		ans = (int)log2(val);
 		break;
 	}
 
@@ -164,4 +164,15 @@ void SudokuSolver::Solve()
 {
 	_endTime = _startTime = chrono::high_resolution_clock::now();
 	RecurrSolve(_grid, 0, 0);
+}
+
+string SudokuSolver::TimeStr(long long timeMicro)
+{
+	ostringstream oss;
+	long long min, sec, ms;
+	timeMicro -= (min = timeMicro / 60000000) * 60000000;
+	timeMicro -= (sec = timeMicro / 1000000) * 1000000;
+	timeMicro -= (ms = timeMicro / 1000) * 1000;
+	oss << min << " min " << sec << " sec " << ms << " millisec " << timeMicro << " microSec";
+	return oss.str();
 }

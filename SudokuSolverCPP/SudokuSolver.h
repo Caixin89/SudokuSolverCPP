@@ -1,6 +1,8 @@
+#pragma once
 #include <fstream>
 #include <cmath>
 #include <chrono>
+#include <sstream>
 using namespace std;
 
 class SudokuSolver
@@ -21,6 +23,7 @@ private:
 	void PrintGrid(int aGrid[][_side]);
 	void RecurrSolve(int aGrid[][_side], int y, int x);
 	int CustomLog2(int val);
+	string TimeStr(long long timeMicro);
 
 public:
 	SudokuSolver();
