@@ -7,6 +7,7 @@ SudokuSolver::SudokuSolver()
 {
 	_inputFile.open(_inputFileName);
 	_solutionFile.open(_solutionFileName);
+	_grid = new SudokuGridIntArr();
 	LoadGrid();
 }
 
@@ -14,6 +15,7 @@ SudokuSolver::~SudokuSolver()
 {
 	_inputFile.close();
 	_solutionFile.close();
+	delete _grid;
 }
 
 void SudokuSolver::LoadGrid()
@@ -25,37 +27,37 @@ void SudokuSolver::LoadGrid()
 		for (int j = 0; j < _side; ++j)
 		{
 			_inputFile >> tmp;
-			_grid.Set(i, j, tmp);
+			_grid->Set(i, j, tmp);
 		}
 	}
 }
 
-void SudokuSolver::Check_From_Row(int &aProb, const SudokuGridIntArr& aGrid, int y, int x)
+void SudokuSolver::Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
 {
 	int tmp;
 
 	for (int i = 0; i < _side; ++i)
 	{
-		tmp = aGrid.Get(y, i);
+		tmp = aGrid->Get(y, i);
 
 		if (i != x && tmp != 0)
 			aProb &= ~(1 << tmp);
 	}
 }
 
-void SudokuSolver::Check_From_Col(int &aProb, const SudokuGridIntArr& aGrid, int y, int x)
+void SudokuSolver::Check_From_Col(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
 {
 	int tmp;
 	for (int i = 0; i < _side; ++i)
 	{
-		tmp = aGrid.Get(i, x);
+		tmp = aGrid->Get(i, x);
 
 		if (i != y && tmp != 0)
 			aProb &= ~(1 << tmp);
 	}
 }
 
-void SudokuSolver::Check_From_3x3(int &aProb, const SudokuGridIntArr& aGrid, int y, int x)
+void SudokuSolver::Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
 {
 	int tmp;
 
@@ -63,7 +65,7 @@ void SudokuSolver::Check_From_3x3(int &aProb, const SudokuGridIntArr& aGrid, int
 	{
 		for (int x_start = x / 3 * 3; x_start < (x / 3 + 1) * 3; ++x_start)
 		{
-			tmp = aGrid.Get(y_start, x_start);
+			tmp = aGrid->Get(y_start, x_start);
 
 			if ((y_start != y || x_start != x) && tmp != 0)
 				aProb &= ~(1 << tmp);
@@ -71,13 +73,13 @@ void SudokuSolver::Check_From_3x3(int &aProb, const SudokuGridIntArr& aGrid, int
 	}
 }
 
-void SudokuSolver::PrintGrid(const SudokuGridIntArr& aGrid)
+void SudokuSolver::PrintGrid(BaseSudokuGrid* aGrid)
 {
 	for (int i = 0; i < _side; ++i)
 	{
 		for (int j = 0; j < _side; ++j)
 		{
-			_solutionFile << aGrid.Get(i, j) << " ";
+			_solutionFile << aGrid->Get(i, j) << " ";
 		}
 
 		_solutionFile << endl;
@@ -89,34 +91,37 @@ void SudokuSolver::PrintGrid(const SudokuGridIntArr& aGrid)
 	_solutionFile << "Time elapsed: " << TimeStr(chrono::duration_cast<chrono::microseconds>(_endTime - _startTime).count()) << endl << endl;
 }
 
-void SudokuSolver::RecurrSolve(SudokuGridIntArr aGrid, int y, int x)
+void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 {
 	int prob;
 	int lsb;
+	BaseSudokuGrid* copyGrid;
+	aGrid->GetCopy(copyGrid);
 
 	for (; y < _side; ++y)
 	{
 		for (; x < _side; ++x)
 		{
 			prob = 1022;
-			Check_From_Row(prob, aGrid, y, x);
-			Check_From_Col(prob, aGrid, y, x);
-			Check_From_3x3(prob, aGrid, y, x);
+			Check_From_Row(prob, copyGrid, y, x);
+			Check_From_Col(prob, copyGrid, y, x);
+			Check_From_3x3(prob, copyGrid, y, x);
 
-			if (aGrid.Get(y, x) == 0)
+			if (copyGrid->Get(y, x) == 0)
 			{
 				if (prob != 0 && (prob & (prob - 1)) == 0)
-					aGrid.Set(y, x, CustomLog2(prob));
+					copyGrid->Set(y, x, CustomLog2(prob));
 				else
 				{
 					while (prob != 0)
 					{
 						lsb = prob & -prob;
-						aGrid.Set(y, x, CustomLog2(lsb));
-						RecurrSolve(aGrid, y, x + 1);
+						copyGrid->Set(y, x, CustomLog2(lsb));
+						RecurrSolve(copyGrid, y, x + 1);
 						prob &= ~lsb;
 					}
 
+					delete copyGrid;
 					return;
 				}
 			}
@@ -125,7 +130,8 @@ void SudokuSolver::RecurrSolve(SudokuGridIntArr aGrid, int y, int x)
 		x = 0;
 	}
 
-	PrintGrid(aGrid);
+	PrintGrid(copyGrid);
+	delete copyGrid;
 }
 
 int SudokuSolver::CustomLog2(int val)

@@ -12,5 +12,6 @@ public:
 	SudokuGridBitArr(const SudokuGridBitArr& x);
 	virtual int Get(int y, int x) const;
 	virtual void Set(int y, int x, int val);
+	virtual void GetCopy(BaseSudokuGrid*& x);
 };
 
