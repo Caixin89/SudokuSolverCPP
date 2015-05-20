@@ -191,6 +191,6 @@ string SudokuSolver::TimeStr(long long timeMicro)
 	timeMicro -= (min = timeMicro / 60000000) * 60000000;
 	timeMicro -= (sec = timeMicro / 1000000) * 1000000;
 	timeMicro -= (ms = timeMicro / 1000) * 1000;
-	oss << min << " min " << sec << " sec " << ms << " millisec " << timeMicro << " microSec";
+	oss << min << " min " << sec << " sec " << ms << " millisec " << timeMicro << " microsec";
 	return oss.str();
 }
