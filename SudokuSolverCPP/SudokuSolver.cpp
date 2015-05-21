@@ -110,13 +110,13 @@ void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 			if (copyGrid->Get(y, x) == 0)
 			{
 				if (prob != 0 && (prob & (prob - 1)) == 0)
-					copyGrid->Set(y, x, CustomLog2(prob));
+					copyGrid->Set(y, x, log2(prob));
 				else
 				{
 					while (prob != 0)
 					{
 						lsb = prob & -prob;
-						copyGrid->Set(y, x, CustomLog2(lsb));
+						copyGrid->Set(y, x, log2(lsb));
 						RecurrSolve(copyGrid, y, x + 1);
 						prob &= ~lsb;
 					}
@@ -132,50 +132,6 @@ void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 
 	PrintGrid(copyGrid);
 	delete copyGrid;
-}
-
-int SudokuSolver::CustomLog2(int val)
-{
-	int ans;
-
-	switch (val)
-	{
-	case 1:
-		ans = 0;
-		break;
-	case 2:
-		ans = 1;
-		break;
-	case 4:
-		ans = 2;
-		break;
-	case 8:
-		ans = 3;
-		break;
-	case 16:
-		ans = 4;
-		break;
-	case 32:
-		ans = 5;
-		break;
-	case 64:
-		ans = 6;
-		break;
-	case 128:
-		ans = 7;
-		break;
-	case 256:
-		ans = 8;
-		break;
-	case 512:
-		ans = 9;
-		break;
-	default:
-		ans = (int)log2(val);
-		break;
-	}
-
-	return ans;
 }
 
 void SudokuSolver::Solve()

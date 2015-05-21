@@ -24,7 +24,6 @@ private:
 	void LoadGrid();
 	void PrintGrid(BaseSudokuGrid* aGrid);
 	void RecurrSolve(BaseSudokuGrid* aGrid, int y, int x);
-	int CustomLog2(int val);
 	string TimeStr(long long timeMicro);
 
 public:
