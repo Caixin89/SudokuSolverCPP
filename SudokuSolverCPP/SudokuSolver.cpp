@@ -95,8 +95,7 @@ void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 {
 	int prob;
 	int lsb;
-	BaseSudokuGrid* copyGrid;
-	aGrid->GetCopy(copyGrid);
+	BaseSudokuGrid* copyGrid = aGrid->GetCopy();
 
 	for (; y < _side; ++y)
 	{

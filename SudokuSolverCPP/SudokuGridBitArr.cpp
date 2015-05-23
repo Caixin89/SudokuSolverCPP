@@ -43,7 +43,7 @@ void SudokuGridBitArr::Set(int y, int x, int val)
 	}
 }
 
-void SudokuGridBitArr::GetCopy(BaseSudokuGrid*& x)
+BaseSudokuGrid* SudokuGridBitArr::GetCopy()
 {
-	x = new SudokuGridBitArr(*this);
+	return new SudokuGridBitArr(*this);
 }
