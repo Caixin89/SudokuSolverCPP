@@ -6,6 +6,7 @@
 #include "SudokuGridBitArr.h"
 #include "SudokuGridIntArr.h"
 using namespace std;
+using namespace chrono;
 
 class SudokuSolver
 {
@@ -16,7 +17,7 @@ private:
 	static char const * const _inputFileName;
 	static char const * const _solutionFileName;
 	BaseSudokuGrid* _grid;
-	chrono::system_clock::time_point _startTime, _endTime;
+	high_resolution_clock::time_point _startTime, _endTime;
 
 	void Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
 	void Check_From_Col(int &aProb, BaseSudokuGrid* aGrid, int y, int x);

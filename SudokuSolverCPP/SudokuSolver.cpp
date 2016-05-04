@@ -85,10 +85,10 @@ void SudokuSolver::PrintGrid(BaseSudokuGrid* aGrid)
 		_solutionFile << endl;
 	}
 
-	auto newEndTime = chrono::high_resolution_clock::now();
-	_solutionFile << "Time taken for this solution: " << TimeStr(chrono::duration_cast<chrono::microseconds>(newEndTime - _endTime).count()) << endl;
+	auto newEndTime = high_resolution_clock::now();
+	_solutionFile << "Time taken for this solution: " << TimeStr(duration_cast<microseconds>(newEndTime - _endTime).count()) << endl;
 	_endTime = newEndTime;
-	_solutionFile << "Time elapsed: " << TimeStr(chrono::duration_cast<chrono::microseconds>(_endTime - _startTime).count()) << endl << endl;
+	_solutionFile << "Time elapsed: " << TimeStr(duration_cast<microseconds>(_endTime - _startTime).count()) << endl << endl;
 }
 
 void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
@@ -101,13 +101,13 @@ void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 	{
 		for (; x < _side; ++x)
 		{
-			prob = 1022;
-			Check_From_Row(prob, copyGrid, y, x);
-			Check_From_Col(prob, copyGrid, y, x);
-			Check_From_3x3(prob, copyGrid, y, x);
-
 			if (copyGrid->Get(y, x) == 0)
 			{
+				prob = 1022;
+				Check_From_Row(prob, copyGrid, y, x);
+				Check_From_Col(prob, copyGrid, y, x);
+				Check_From_3x3(prob, copyGrid, y, x);
+
 				if (prob != 0 && (prob & (prob - 1)) == 0)
 					copyGrid->Set(y, x, log2(prob));
 				else
@@ -135,7 +135,7 @@ void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
 
 void SudokuSolver::Solve()
 {
-	_endTime = _startTime = chrono::high_resolution_clock::now();
+	_endTime = _startTime = high_resolution_clock::now();
 	RecurrSolve(_grid, 0, 0);
 }
 
