@@ -1,25 +1,30 @@
 #include "SudokuSolver.h"
 
 char const * const SudokuSolver::_inputFileName = "sudoku.txt";
-char const * const SudokuSolver::_solutionFileName = "solution.txt";
+char const * const SudokuSolver::_solutionFileName = "solution2.txt";
 
 SudokuSolver::SudokuSolver()
-{
-	_inputFile.open(_inputFileName);
-	_solutionFile.open(_solutionFileName);
+{ 
 	_grid = new SudokuGridIntArr();
-	LoadGrid();
 }
 
 SudokuSolver::~SudokuSolver()
 {
-	_inputFile.close();
-	_solutionFile.close();
+	if (_inputFile.is_open())
+		_inputFile.close();
+	if (_solutionFile.is_open())
+		_solutionFile.close();
 	delete _grid;
 }
 
-void SudokuSolver::LoadGrid()
+bool SudokuSolver::LoadGrid()
 {
+	_inputFile.open(_inputFileName);
+	_solutionFile.open(_solutionFileName);
+
+	if (!_inputFile.is_open() || !_solutionFile.is_open())
+		return false;
+
 	int tmp;
 
 	for (int i = 0; i < _side; ++i)
@@ -30,6 +35,8 @@ void SudokuSolver::LoadGrid()
 			_grid->Set(i, j, tmp);
 		}
 	}
+
+	return true;
 }
 
 void SudokuSolver::Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x)

@@ -22,7 +22,7 @@ private:
 	void Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
 	void Check_From_Col(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
 	void Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
-	void LoadGrid();
+	void PrintGrid();
 	void PrintGrid(BaseSudokuGrid* aGrid);
 	void RecurrSolve(BaseSudokuGrid* aGrid, int y, int x);
 	string TimeStr(long long timeMicro);
@@ -31,4 +31,5 @@ public:
 	SudokuSolver();
 	~SudokuSolver();
 	void Solve();
+	bool LoadGrid();
 };
