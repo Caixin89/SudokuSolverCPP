@@ -1,7 +1,7 @@
 #include "SudokuSolver.h"
 
 char const * const SudokuSolver::_inputFileName = "sudoku.txt";
-char const * const SudokuSolver::_solutionFileName = "solution2.txt";
+char const * const SudokuSolver::_solutionFileName = "solution.txt";
 
 SudokuSolver::SudokuSolver()
 { 
@@ -39,32 +39,32 @@ bool SudokuSolver::LoadGrid()
 	return true;
 }
 
-void SudokuSolver::Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
+void SudokuSolver::Check_From_Row(int &aProb, int y, int x)
 {
 	int tmp;
 
 	for (int i = 0; i < _side; ++i)
 	{
-		tmp = aGrid->Get(y, i);
+		tmp = _grid->Get(y, i);
 
 		if (i != x && tmp != 0)
 			aProb &= ~(1 << tmp);
 	}
 }
 
-void SudokuSolver::Check_From_Col(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
+void SudokuSolver::Check_From_Col(int &aProb, int y, int x)
 {
 	int tmp;
 	for (int i = 0; i < _side; ++i)
 	{
-		tmp = aGrid->Get(i, x);
+		tmp = _grid->Get(i, x);
 
 		if (i != y && tmp != 0)
 			aProb &= ~(1 << tmp);
 	}
 }
 
-void SudokuSolver::Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int x)
+void SudokuSolver::Check_From_3x3(int &aProb, int y, int x)
 {
 	int tmp;
 
@@ -72,7 +72,7 @@ void SudokuSolver::Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int 
 	{
 		for (int x_start = x / 3 * 3; x_start < (x / 3 + 1) * 3; ++x_start)
 		{
-			tmp = aGrid->Get(y_start, x_start);
+			tmp = _grid->Get(y_start, x_start);
 
 			if ((y_start != y || x_start != x) && tmp != 0)
 				aProb &= ~(1 << tmp);
@@ -80,13 +80,13 @@ void SudokuSolver::Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int 
 	}
 }
 
-void SudokuSolver::PrintGrid(BaseSudokuGrid* aGrid)
+void SudokuSolver::PrintGrid()
 {
 	for (int i = 0; i < _side; ++i)
 	{
 		for (int j = 0; j < _side; ++j)
 		{
-			_solutionFile << aGrid->Get(i, j) << " ";
+			_solutionFile << _grid->Get(i, j) << " ";
 		}
 
 		_solutionFile << endl;
@@ -98,52 +98,45 @@ void SudokuSolver::PrintGrid(BaseSudokuGrid* aGrid)
 	_solutionFile << "Time elapsed: " << TimeStr(duration_cast<microseconds>(_endTime - _startTime).count()) << endl << endl;
 }
 
-void SudokuSolver::RecurrSolve(BaseSudokuGrid* aGrid, int y, int x)
+void SudokuSolver::RecurrSolve(int y, int x)
 {
 	int prob;
 	int lsb;
-	BaseSudokuGrid* copyGrid = aGrid->GetCopy();
 
 	for (; y < _side; ++y)
 	{
 		for (; x < _side; ++x)
 		{
-			if (copyGrid->Get(y, x) == 0)
+			if (_grid->Get(y, x) == 0)
 			{
 				prob = 1022;
-				Check_From_Row(prob, copyGrid, y, x);
-				Check_From_Col(prob, copyGrid, y, x);
-				Check_From_3x3(prob, copyGrid, y, x);
+				Check_From_Row(prob, y, x);
+				Check_From_Col(prob, y, x);
+				Check_From_3x3(prob, y, x);
 
-				if (prob != 0 && (prob & (prob - 1)) == 0)
-					copyGrid->Set(y, x, log2(prob));
-				else
+				while (prob != 0)
 				{
-					while (prob != 0)
-					{
-						lsb = prob & -prob;
-						copyGrid->Set(y, x, log2(lsb));
-						RecurrSolve(copyGrid, y, x + 1);
-						prob &= ~lsb;
-					}
-
-					delete copyGrid;
-					return;
+					lsb = prob & -prob;
+					_grid->Set(y, x, log2(lsb));
+					RecurrSolve(y, x + 1);
+					prob &= ~lsb;
 				}
+
+				_grid->Set(y, x, 0);
+				return;
 			}
 		}
 
 		x = 0;
 	}
 
-	PrintGrid(copyGrid);
-	delete copyGrid;
+	PrintGrid();
 }
 
 void SudokuSolver::Solve()
 {
 	_endTime = _startTime = high_resolution_clock::now();
-	RecurrSolve(_grid, 0, 0);
+	RecurrSolve(0, 0);
 }
 
 string SudokuSolver::TimeStr(long long timeMicro)

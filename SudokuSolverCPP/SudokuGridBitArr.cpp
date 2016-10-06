@@ -42,8 +42,3 @@ void SudokuGridBitArr::Set(int y, int x, int val)
 		_bitArr1[arrIdx] |= (((unsigned long long) val) << (bitIdx * 4));
 	}
 }
-
-BaseSudokuGrid* SudokuGridBitArr::GetCopy()
-{
-	return new SudokuGridBitArr(*this);
-}

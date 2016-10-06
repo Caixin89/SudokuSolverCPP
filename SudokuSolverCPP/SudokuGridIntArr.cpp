@@ -26,8 +26,3 @@ void SudokuGridIntArr::Set(int y, int x, int val)
 {
 	_grid[y][x] = val;
 }
-
-BaseSudokuGrid* SudokuGridIntArr::GetCopy()
-{
-	return new SudokuGridIntArr(*this);
-}

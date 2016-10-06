@@ -19,12 +19,11 @@ private:
 	BaseSudokuGrid* _grid;
 	high_resolution_clock::time_point _startTime, _endTime;
 
-	void Check_From_Row(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
-	void Check_From_Col(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
-	void Check_From_3x3(int &aProb, BaseSudokuGrid* aGrid, int y, int x);
+	void Check_From_Row(int &aProb, int y, int x);
+	void Check_From_Col(int &aProb, int y, int x);
+	void Check_From_3x3(int &aProb, int y, int x);
 	void PrintGrid();
-	void PrintGrid(BaseSudokuGrid* aGrid);
-	void RecurrSolve(BaseSudokuGrid* aGrid, int y, int x);
+	void RecurrSolve(int y, int x);
 	string TimeStr(long long timeMicro);
 
 public:
