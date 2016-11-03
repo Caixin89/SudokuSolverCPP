@@ -6,6 +6,7 @@ char const * const SudokuSolver::_solutionFileName = "solution.txt";
 SudokuSolver::SudokuSolver()
 { 
 	_grid = new SudokuGridIntArr();
+	foundSolution = false;
 }
 
 SudokuSolver::~SudokuSolver()
@@ -91,11 +92,6 @@ void SudokuSolver::PrintGrid()
 
 		_solutionFile << endl;
 	}
-
-	auto newEndTime = high_resolution_clock::now();
-	_solutionFile << "Time taken for this solution: " << TimeStr(duration_cast<microseconds>(newEndTime - _endTime).count()) << endl;
-	_endTime = newEndTime;
-	_solutionFile << "Time elapsed: " << TimeStr(duration_cast<microseconds>(_endTime - _startTime).count()) << endl << endl;
 }
 
 void SudokuSolver::RecurrSolve(int y, int x)
@@ -119,6 +115,8 @@ void SudokuSolver::RecurrSolve(int y, int x)
 					lsb = prob & -prob;
 					_grid->Set(y, x, log2(lsb));
 					RecurrSolve(y, x + 1);
+					if (foundSolution)
+						return;
 					prob &= ~lsb;
 				}
 
@@ -131,21 +129,10 @@ void SudokuSolver::RecurrSolve(int y, int x)
 	}
 
 	PrintGrid();
+	foundSolution = true;
 }
 
 void SudokuSolver::Solve()
 {
-	_endTime = _startTime = high_resolution_clock::now();
 	RecurrSolve(0, 0);
-}
-
-string SudokuSolver::TimeStr(long long timeMicro)
-{
-	ostringstream oss;
-	long long min, sec, ms;
-	timeMicro -= (min = timeMicro / 60000000) * 60000000;
-	timeMicro -= (sec = timeMicro / 1000000) * 1000000;
-	timeMicro -= (ms = timeMicro / 1000) * 1000;
-	oss << min << " min " << sec << " sec " << ms << " millisec " << timeMicro << " microsec";
-	return oss.str();
 }
